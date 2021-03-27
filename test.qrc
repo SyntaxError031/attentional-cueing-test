@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/audio">
+        <file>res/audios/Left.mp3</file>
+        <file>res/audios/Right.mp3</file>
+    </qresource>
+</RCC>
