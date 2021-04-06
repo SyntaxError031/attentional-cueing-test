@@ -6,6 +6,9 @@ TypePage::TypePage(QWidget *parent) :
     ui(new Ui::TypePage)
 {
     ui->setupUi(this);
+    ui->comboBox->addItem("easy");
+    ui->comboBox->addItem("medium");
+    ui->comboBox->addItem("hard");
 }
 
 TypePage::~TypePage()
@@ -16,28 +19,33 @@ TypePage::~TypePage()
 void TypePage::on_practice_clicked()
 {
     this->hide();
-    emit practice();
+    emit practice(ui->comboBox->currentIndex());
 }
 
 void TypePage::on_visual_clicked()
 {
     this->hide();
-    emit visual_test();
+    emit visual_test(ui->comboBox->currentIndex());
 }
 
 void TypePage::on_auditory_clicked()
 {
     this->hide();
-    emit auditory_test();
+    emit auditory_test(ui->comboBox->currentIndex());
 }
 
 void TypePage::on_tactile_clicked()
 {
     this->hide();
-    emit tactile_test();
+    emit tactile_test(ui->comboBox->currentIndex());
 }
 
 void TypePage::show_typepage()
 {
     this->show();
+}
+
+void TypePage::on_comboBox_currentIndexChanged(int index)
+{
+    qDebug() << index;
 }

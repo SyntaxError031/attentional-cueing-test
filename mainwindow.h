@@ -40,8 +40,10 @@ private:
     Ui::MainWindow *ui;
     QPixmap pix;
     Status status;
+    int difficulty;
     bool isInTrial;
     static const int TARGET_SIZE = 10;
+    static const int EASY_TARGET_SIZE = 20;
     static const int NUM_TRIAL = 5;
     QPoint currentTargetPos;
     QTime timer;
@@ -50,7 +52,7 @@ private:
     int right;
     int wrong;
 
-    void showTarget(int key);
+    void showTarget(int key, int level);
     void showVisualCue(int key);
     void playAuditoryCue(int key);
     bool isOnTarget(const QPoint &pos);
@@ -59,10 +61,10 @@ private:
     void logToFile();
 
 private slots:
-    void show_practice();
-    void show_visual_test();
-    void show_auditory_test();
-    void show_tactile_test();
+    void show_practice(int level);
+    void show_visual_test(int level);
+    void show_auditory_test(int level);
+    void show_tactile_test(int level);
 
 signals:
     void end_test();

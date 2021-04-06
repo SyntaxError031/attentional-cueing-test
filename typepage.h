@@ -2,6 +2,7 @@
 #define TYPEPAGE_H
 
 #include <QWidget>
+#include <QDebug>
 
 namespace Ui {
 class TypePage;
@@ -23,14 +24,16 @@ private slots:
 
     void show_typepage();
 
+    void on_comboBox_currentIndexChanged(int index);
+
 private:
     Ui::TypePage *ui;
 
 signals:
-    void practice();
-    void visual_test();
-    void auditory_test();
-    void tactile_test();
+    void practice(int level);
+    void visual_test(int level);
+    void auditory_test(int level);
+    void tactile_test(int level);
 };
 
 #endif // TYPEPAGE_H

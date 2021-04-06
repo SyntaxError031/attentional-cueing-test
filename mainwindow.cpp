@@ -15,37 +15,41 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::show_practice()
+void MainWindow::show_practice(int level)
 {
     this->show();
     status = PRACTICE;
+    difficulty = level;
     trialCnt = 0;
     right = wrong = 0;
     reactionTime.clear();
 }
 
-void MainWindow::show_visual_test()
+void MainWindow::show_visual_test(int level)
 {
     this->show();
     status = VISUAL;
+    difficulty = level;
     trialCnt = 0;
     right = wrong = 0;
     reactionTime.clear();
 }
 
-void MainWindow::show_auditory_test()
+void MainWindow::show_auditory_test(int level)
 {
     this->show();
     status = AUDITORY;
+    difficulty = level;
     trialCnt = 0;
     right = wrong = 0;
     reactionTime.clear();
 }
 
-void MainWindow::show_tactile_test()
+void MainWindow::show_tactile_test(int level)
 {
     this->show();
     status = TACTILE;
+    difficulty = level;
     trialCnt = 0;
     right = wrong = 0;
     reactionTime.clear();
@@ -74,7 +78,7 @@ void MainWindow::keyPressEvent(QKeyEvent *ev)
     if (!isInTrial && (ev->key() == Qt::Key_Left || ev->key() == Qt::Key_Right)) {
         isInTrial = true;
         if (status == PRACTICE) {
-            showTarget(ev->key());
+            showTarget(ev->key(), difficulty);
         }
         else if (status == VISUAL) {
             showVisualCue(ev->key());
@@ -90,7 +94,7 @@ void MainWindow::keyPressEvent(QKeyEvent *ev)
             while(t.elapsed() < 1000) {
                 QCoreApplication::processEvents();
             }
-            showTarget(ev->key());
+            showTarget(ev->key(), difficulty);
         }
         else if (status == AUDITORY) {
             playAuditoryCue(ev->key());
@@ -99,7 +103,7 @@ void MainWindow::keyPressEvent(QKeyEvent *ev)
             while(t.elapsed() < 1000) {
                 QCoreApplication::processEvents();
             }
-            showTarget(ev->key());
+            showTarget(ev->key(), difficulty);
         }
         else if (status == TACTILE) {
             QTime t;
@@ -107,7 +111,7 @@ void MainWindow::keyPressEvent(QKeyEvent *ev)
             while(t.elapsed() < 1000) {
                 QCoreApplication::processEvents();
             }
-            showTarget(ev->key());
+            showTarget(ev->key(), difficulty);
         }
     }
 }
@@ -141,20 +145,40 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *ev)
     }
 }
 
-void MainWindow::showTarget(int key)
+void MainWindow::showTarget(int key, int difficulty)
 {
     int w = this->size().width(), h = this->size().height(), halfW = w / 2;
     qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
-    int randX = qrand() % (halfW - TARGET_SIZE), randY = qrand() % (h - TARGET_SIZE);
+    int randX, randY, distractX, distractY;
+    if (difficulty == 0) {
+         randX = qrand() % (halfW - EASY_TARGET_SIZE), randY = qrand() % (h - EASY_TARGET_SIZE);
+    }
+    else {
+        randX = qrand() % (halfW - TARGET_SIZE), randY = qrand() % (h - TARGET_SIZE);
+    }
     if (key == Qt::Key_Right) {
         randX += halfW;
+    }
+    if (difficulty == 2) {
+        distractX = qrand() % (halfW - TARGET_SIZE), distractY = qrand() % (h - TARGET_SIZE);
+        if (key == Qt::Key_Left) {
+            distractX += halfW;
+        }
     }
     qDebug() << randX << ", " << randY << endl;
     currentTargetPos = QPoint(randX, randY);
     refresh();
     QPainter painter(&pix);
     drawMiddleLine(painter);
-    painter.fillRect(randX, randY, TARGET_SIZE, TARGET_SIZE, Qt::blue);
+    if (difficulty == 0) {
+        painter.fillRect(randX, randY, EASY_TARGET_SIZE, EASY_TARGET_SIZE, Qt::blue);
+    }
+    else {
+        if (difficulty == 2) {
+            painter.fillRect(distractX, distractY, TARGET_SIZE, TARGET_SIZE, Qt::white);
+        }
+        painter.fillRect(randX, randY, TARGET_SIZE, TARGET_SIZE, Qt::blue);
+    }
     update();
     timer.start();
 
@@ -191,7 +215,7 @@ void MainWindow::logToFile()
         { TACTILE, "tactile" }
     };
     auto time = QDateTime::currentDateTime().toString("yyyyMMdd_hh-mm-ss");
-    QString fileName = kMap.at(status) + "_" + time + ".txt";
+    QString fileName = kMap.at(status) + "_" + "level_" + QString::number(difficulty) + "_" + time + ".txt";
     QFile file(fileName);
 
     if (file.open(QIODevice::ReadWrite)) {
@@ -208,6 +232,9 @@ void MainWindow::logToFile()
 bool MainWindow::isOnTarget(const QPoint &pos)
 {
     int disX = pos.x() - currentTargetPos.x(), distY = pos.y() - currentTargetPos.y();
+    if (difficulty == 0) {
+        return disX >= 0 && disX <= EASY_TARGET_SIZE && distY >= 0 && distY <= EASY_TARGET_SIZE;
+    }
     return disX >= 0 && disX <= TARGET_SIZE && distY >= 0 && distY <= TARGET_SIZE;
 }
 
