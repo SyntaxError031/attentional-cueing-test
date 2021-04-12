@@ -31,9 +31,9 @@ private:
 
 signals:
     void practice(int level);
-    void visual_test(int level);
-    void auditory_test(int level);
-    void tactile_test(int level);
+    void visual_test(int level, bool practice);
+    void auditory_test(int level, bool practice);
+    void tactile_test(int level, bool practice);
 };
 
 #endif // TYPEPAGE_H

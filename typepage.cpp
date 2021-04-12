@@ -25,19 +25,19 @@ void TypePage::on_practice_clicked()
 void TypePage::on_visual_clicked()
 {
     this->hide();
-    emit visual_test(ui->comboBox->currentIndex());
+    emit visual_test(ui->comboBox->currentIndex(), ui->checkBox->isChecked());
 }
 
 void TypePage::on_auditory_clicked()
 {
     this->hide();
-    emit auditory_test(ui->comboBox->currentIndex());
+    emit auditory_test(ui->comboBox->currentIndex(), ui->checkBox->isChecked());
 }
 
 void TypePage::on_tactile_clicked()
 {
     this->hide();
-    emit tactile_test(ui->comboBox->currentIndex());
+    emit tactile_test(ui->comboBox->currentIndex(), ui->checkBox->isChecked());
 }
 
 void TypePage::show_typepage()

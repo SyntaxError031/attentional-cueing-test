@@ -25,31 +25,34 @@ void MainWindow::show_practice(int level)
     reactionTime.clear();
 }
 
-void MainWindow::show_visual_test(int level)
+void MainWindow::show_visual_test(int level, bool isPractice)
 {
     this->show();
     status = VISUAL;
     difficulty = level;
+    this->isPractice = isPractice;
     trialCnt = 0;
     right = wrong = 0;
     reactionTime.clear();
 }
 
-void MainWindow::show_auditory_test(int level)
+void MainWindow::show_auditory_test(int level, bool isPractice)
 {
     this->show();
     status = AUDITORY;
+    this->isPractice = isPractice;
     difficulty = level;
     trialCnt = 0;
     right = wrong = 0;
     reactionTime.clear();
 }
 
-void MainWindow::show_tactile_test(int level)
+void MainWindow::show_tactile_test(int level, bool isPractice)
 {
     this->show();
     status = TACTILE;
     difficulty = level;
+    this->isPractice = isPractice;
     trialCnt = 0;
     right = wrong = 0;
     reactionTime.clear();
@@ -136,7 +139,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *ev)
         drawMiddleLine(painter);
         isInTrial = false;
 
-        if (trialCnt == NUM_TRIAL) {  // end test
+        int totalNum = isPractice ? PRACTICE_NUM_TRIAL : NUM_TRIAL;
+        if (trialCnt == totalNum) {  // end test
             logToFile();
             this->hide();
             status = IDLE;
@@ -214,8 +218,13 @@ void MainWindow::logToFile()
         { AUDITORY, "auditory" },
         { TACTILE, "tactile" }
     };
-    auto time = QDateTime::currentDateTime().toString("yyyyMMdd_hh-mm-ss");
-    QString fileName = kMap.at(status) + "_" + "level_" + QString::number(difficulty) + "_" + time + ".txt";
+    auto time = QDateTime::currentDateTime().toString("yyyyMMdd-hhmmss");
+    QString fileName = kMap.at(status) + "_" + "level_" + QString::number(difficulty) + "_" + time;
+    if (isPractice) {
+        fileName += "_practice.txt";
+    } else {
+        fileName += ".txt";
+    }
     QFile file(fileName);
 
     if (file.open(QIODevice::ReadWrite)) {

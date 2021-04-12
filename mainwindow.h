@@ -41,10 +41,12 @@ private:
     QPixmap pix;
     Status status;
     int difficulty;
+    bool isPractice;
     bool isInTrial;
     static const int TARGET_SIZE = 10;
     static const int EASY_TARGET_SIZE = 20;
-    static const int NUM_TRIAL = 5;
+    static const int NUM_TRIAL = 20;
+    static const int PRACTICE_NUM_TRIAL = 5;
     QPoint currentTargetPos;
     QTime timer;
     std::vector<double> reactionTime;
@@ -62,9 +64,9 @@ private:
 
 private slots:
     void show_practice(int level);
-    void show_visual_test(int level);
-    void show_auditory_test(int level);
-    void show_tactile_test(int level);
+    void show_visual_test(int level, bool practice);
+    void show_auditory_test(int level, bool practice);
+    void show_tactile_test(int level, bool practice);
 
 signals:
     void end_test();
