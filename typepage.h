@@ -17,7 +17,6 @@ public:
     ~TypePage();
 
 private slots:
-    void on_practice_clicked();
     void on_visual_clicked();
     void on_auditory_clicked();
     void on_tactile_clicked();
@@ -30,7 +29,6 @@ private:
     Ui::TypePage *ui;
 
 signals:
-    void practice(int level);
     void visual_test(int level, bool practice);
     void auditory_test(int level, bool practice);
     void tactile_test(int level, bool practice);

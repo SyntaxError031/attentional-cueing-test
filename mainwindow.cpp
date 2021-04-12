@@ -15,22 +15,16 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::show_practice(int level)
-{
-    this->show();
-    status = PRACTICE;
-    difficulty = level;
-    trialCnt = 0;
-    right = wrong = 0;
-    reactionTime.clear();
-}
-
 void MainWindow::show_visual_test(int level, bool isPractice)
 {
     this->show();
     status = VISUAL;
     difficulty = level;
-    this->isPractice = isPractice;
+    if (isPractice) {
+        testCode = 0;
+    } else {
+        testCode = level + 1;
+    }
     trialCnt = 0;
     right = wrong = 0;
     reactionTime.clear();
@@ -40,8 +34,12 @@ void MainWindow::show_auditory_test(int level, bool isPractice)
 {
     this->show();
     status = AUDITORY;
-    this->isPractice = isPractice;
     difficulty = level;
+    if (isPractice) {
+        testCode = 0;
+    } else {
+        testCode = level + 4;
+    }
     trialCnt = 0;
     right = wrong = 0;
     reactionTime.clear();
@@ -52,7 +50,11 @@ void MainWindow::show_tactile_test(int level, bool isPractice)
     this->show();
     status = TACTILE;
     difficulty = level;
-    this->isPractice = isPractice;
+    if (isPractice) {
+        testCode = 0;
+    } else {
+        testCode = level + 7;
+    }
     trialCnt = 0;
     right = wrong = 0;
     reactionTime.clear();
@@ -78,13 +80,11 @@ void MainWindow::paintEvent(QPaintEvent *)
 
 void MainWindow::keyPressEvent(QKeyEvent *ev)
 {
-    if (!isInTrial && (ev->key() == Qt::Key_Left || ev->key() == Qt::Key_Right)) {
+//    if (!isInTrial && (ev->key() == Qt::Key_Left || ev->key() == Qt::Key_Right)) {
+    if (!isInTrial && (ev->key() == Qt::Key_Right)) {
         isInTrial = true;
-        if (status == PRACTICE) {
-            showTarget(ev->key(), difficulty);
-        }
-        else if (status == VISUAL) {
-            showVisualCue(ev->key());
+        if (status == VISUAL) {
+            showVisualCue();
             QTime t;
             t.start();
             while(t.elapsed() < 300) {
@@ -97,16 +97,16 @@ void MainWindow::keyPressEvent(QKeyEvent *ev)
             while(t.elapsed() < 1000) {
                 QCoreApplication::processEvents();
             }
-            showTarget(ev->key(), difficulty);
+            showTarget(difficulty);
         }
         else if (status == AUDITORY) {
-            playAuditoryCue(ev->key());
+            playAuditoryCue();
             QTime t;
             t.start();
             while(t.elapsed() < 1000) {
                 QCoreApplication::processEvents();
             }
-            showTarget(ev->key(), difficulty);
+            showTarget(difficulty);
         }
         else if (status == TACTILE) {
             QTime t;
@@ -114,7 +114,7 @@ void MainWindow::keyPressEvent(QKeyEvent *ev)
             while(t.elapsed() < 1000) {
                 QCoreApplication::processEvents();
             }
-            showTarget(ev->key(), difficulty);
+            showTarget(difficulty);
         }
     }
 }
@@ -139,7 +139,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *ev)
         drawMiddleLine(painter);
         isInTrial = false;
 
-        int totalNum = isPractice ? PRACTICE_NUM_TRIAL : NUM_TRIAL;
+        int totalNum = testCode == 0 ? PRACTICE_NUM_TRIAL : NUM_TRIAL;
         if (trialCnt == totalNum) {  // end test
             logToFile();
             this->hide();
@@ -149,8 +149,9 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *ev)
     }
 }
 
-void MainWindow::showTarget(int key, int difficulty)
+void MainWindow::showTarget(int difficulty)
 {
+    int key = kSequence[testCode][trialCnt];    // L: 0, R: 1
     int w = this->size().width(), h = this->size().height(), halfW = w / 2;
     qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
     int randX, randY, distractX, distractY;
@@ -160,12 +161,14 @@ void MainWindow::showTarget(int key, int difficulty)
     else {
         randX = qrand() % (halfW - TARGET_SIZE), randY = qrand() % (h - TARGET_SIZE);
     }
-    if (key == Qt::Key_Right) {
+
+    if (key == 1) {    // target is on the right part
         randX += halfW;
     }
+
     if (difficulty == 2) {
         distractX = qrand() % (halfW - TARGET_SIZE), distractY = qrand() % (h - TARGET_SIZE);
-        if (key == Qt::Key_Left) {
+        if (key == 0) {    // target is on the left part, so distractive target is on the right part
             distractX += halfW;
         }
     }
@@ -188,11 +191,12 @@ void MainWindow::showTarget(int key, int difficulty)
 
 }
 
-void MainWindow::showVisualCue(int key)
+void MainWindow::showVisualCue()
 {
+    int key = kSequence[testCode][trialCnt];
     int w = this->size().width(), h = this->size().height();
     int posX = w / 4, posY = h / 2;
-    if (key == Qt::Key_Right) {
+    if (key == 1) {
         posX += w / 2;
     }
     refresh();
@@ -202,10 +206,11 @@ void MainWindow::showVisualCue(int key)
     update();
 }
 
-void MainWindow::playAuditoryCue(int key)
+void MainWindow::playAuditoryCue()
 {
+    int key = kSequence[testCode][trialCnt];
     QMediaPlayer *player = new QMediaPlayer();
-    QString audio = key == Qt::Key_Left ? "Left.mp3" : "Right.mp3";
+    QString audio = key == 0 ? "Left.mp3" : "Right.mp3";
     player->setMedia(QUrl("qrc:/audio/res/audios/" + audio));
     player->play();
 }
@@ -213,14 +218,13 @@ void MainWindow::playAuditoryCue(int key)
 void MainWindow::logToFile()
 {
     const std::unordered_map<Status, QString> kMap = {
-        { PRACTICE, "practice" },
         { VISUAL, "visual" },
         { AUDITORY, "auditory" },
         { TACTILE, "tactile" }
     };
     auto time = QDateTime::currentDateTime().toString("yyyyMMdd-hhmmss");
     QString fileName = kMap.at(status) + "_" + "level_" + QString::number(difficulty) + "_" + time;
-    if (isPractice) {
+    if (testCode == 0) {
         fileName += "_practice.txt";
     } else {
         fileName += ".txt";

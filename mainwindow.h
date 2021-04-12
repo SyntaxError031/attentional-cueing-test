@@ -41,8 +41,9 @@ private:
     QPixmap pix;
     Status status;
     int difficulty;
-    bool isPractice;
+//    bool isPractice;
     bool isInTrial;
+    int testCode;
     static const int TARGET_SIZE = 10;
     static const int EASY_TARGET_SIZE = 20;
     static const int NUM_TRIAL = 20;
@@ -54,16 +55,28 @@ private:
     int right;
     int wrong;
 
-    void showTarget(int key, int level);
-    void showVisualCue(int key);
-    void playAuditoryCue(int key);
+    const std::vector<std::vector<int>> kSequence = {
+        { 0, 1, 1, 0, 0, },
+        { 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, },
+        { 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, },
+        { 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, },
+        { 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, },
+        { 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, },
+        { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, },
+        { 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, },
+        { 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, },
+        { 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, },
+    };
+
+    void showTarget(int level);
+    void showVisualCue();
+    void playAuditoryCue();
     bool isOnTarget(const QPoint &pos);
     void drawMiddleLine(QPainter &painter);
     void refresh();
     void logToFile();
 
 private slots:
-    void show_practice(int level);
     void show_visual_test(int level, bool practice);
     void show_auditory_test(int level, bool practice);
     void show_tactile_test(int level, bool practice);

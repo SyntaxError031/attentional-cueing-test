@@ -16,12 +16,6 @@ TypePage::~TypePage()
     delete ui;
 }
 
-void TypePage::on_practice_clicked()
-{
-    this->hide();
-    emit practice(ui->comboBox->currentIndex());
-}
-
 void TypePage::on_visual_clicked()
 {
     this->hide();

@@ -9,7 +9,6 @@ int main(int argc, char *argv[])
     TypePage typepage;
     typepage.show();
     //w.show();
-    QObject::connect(&typepage, SIGNAL(practice(int)), &w, SLOT(show_practice(int)));
     QObject::connect(&typepage, SIGNAL(visual_test(int, bool)), &w, SLOT(show_visual_test(int, bool)));
     QObject::connect(&typepage, SIGNAL(auditory_test(int, bool)), &w, SLOT(show_auditory_test(int, bool)));
     QObject::connect(&typepage, SIGNAL(tactile_test(int, bool)), &w, SLOT(show_tactile_test(int, bool)));
