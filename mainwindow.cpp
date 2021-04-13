@@ -210,7 +210,7 @@ void MainWindow::playAuditoryCue()
 {
     int key = kSequence[testCode][trialCnt];
     QMediaPlayer *player = new QMediaPlayer();
-    QString audio = key == 0 ? "Left.mp3" : "Right.mp3";
+    QString audio = key == 0 ? "440_l.wav" : "440_r.wav";
     player->setMedia(QUrl("qrc:/audio/res/audios/" + audio));
     player->play();
 }

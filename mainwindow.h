@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <QCoreApplication>
 #include <QMediaPlayer>
+#include <QAudioOutput>
 
 namespace Ui {
 class MainWindow;
@@ -54,6 +55,7 @@ private:
     int trialCnt;
     int right;
     int wrong;
+    QAudioOutput* audio;
 
     const std::vector<std::vector<int>> kSequence = {
         { 0, 1, 1, 0, 0, },
@@ -75,6 +77,7 @@ private:
     void drawMiddleLine(QPainter &painter);
     void refresh();
     void logToFile();
+
 
 private slots:
     void show_visual_test(int level, bool practice);

@@ -2,5 +2,7 @@
     <qresource prefix="/audio">
         <file>res/audios/Left.mp3</file>
         <file>res/audios/Right.mp3</file>
+        <file>res/audios/440_l.wav</file>
+        <file>res/audios/440_r.wav</file>
     </qresource>
 </RCC>
