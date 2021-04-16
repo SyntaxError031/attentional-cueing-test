@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Test 1</string>
+    <string>Visual</string>
    </property>
   </widget>
   <widget class="QPushButton" name="auditory">
@@ -36,7 +36,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Test 2</string>
+    <string>Auditory</string>
    </property>
   </widget>
   <widget class="QPushButton" name="tactile">
@@ -49,7 +49,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Test 3</string>
+    <string>On-head</string>
    </property>
   </widget>
   <widget class="QComboBox" name="comboBox">

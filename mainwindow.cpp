@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Attentional Cueing Test");
     status = IDLE;
     isInTrial = false;
 }
@@ -65,11 +66,12 @@ void MainWindow::resizeEvent(QResizeEvent *)
     int w = this->size().width(), h = this->size().height();
     pix = QPixmap(w, h);
     pix.fill(Qt::black);
-    QPainter painter(&pix);
-    QPen pen;
-    pen.setColor(Qt::white);
-    painter.setPen(pen);
-    painter.drawLine(w/2, 0, w/2, h);
+//    QPainter painter(&pix);
+//    QPen pen;
+//    pen.setColor(Qt::white);
+//    painter.setPen(pen);
+//    painter.drawLine(w/3, 0, w/3, h);
+//    painter.drawLine(w/3*2, 0, w/3*2, h);
 }
 
 void MainWindow::paintEvent(QPaintEvent *)
@@ -87,7 +89,7 @@ void MainWindow::keyPressEvent(QKeyEvent *ev)
             showVisualCue();
             QTime t;
             t.start();
-            while(t.elapsed() < 300) {
+            while(t.elapsed() < 600) {
                 QCoreApplication::processEvents();
             }
             refresh();
@@ -152,24 +154,24 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *ev)
 void MainWindow::showTarget(int difficulty)
 {
     int key = kSequence[testCode][trialCnt];    // L: 0, R: 1
-    int w = this->size().width(), h = this->size().height(), halfW = w / 2;
+    int w = this->size().width(), h = this->size().height(), oneThirdW = w / 3;
     qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
     int randX, randY, distractX, distractY;
     if (difficulty == 0) {
-         randX = qrand() % (halfW - EASY_TARGET_SIZE), randY = qrand() % (h - EASY_TARGET_SIZE);
+         randX = qrand() % (oneThirdW - EASY_TARGET_SIZE), randY = qrand() % (h - EASY_TARGET_SIZE);
     }
     else {
-        randX = qrand() % (halfW - TARGET_SIZE), randY = qrand() % (h - TARGET_SIZE);
+        randX = qrand() % (oneThirdW - TARGET_SIZE), randY = qrand() % (h - TARGET_SIZE);
     }
 
     if (key == 1) {    // target is on the right part
-        randX += halfW;
+        randX += 2 * oneThirdW;
     }
 
     if (difficulty == 2) {
-        distractX = qrand() % (halfW - TARGET_SIZE), distractY = qrand() % (h - TARGET_SIZE);
+        distractX = qrand() % (oneThirdW - TARGET_SIZE), distractY = qrand() % (h - TARGET_SIZE);
         if (key == 0) {    // target is on the left part, so distractive target is on the right part
-            distractX += halfW;
+            distractX += 2 * oneThirdW;
         }
     }
     qDebug() << randX << ", " << randY << endl;
@@ -195,14 +197,20 @@ void MainWindow::showVisualCue()
 {
     int key = kSequence[testCode][trialCnt];
     int w = this->size().width(), h = this->size().height();
-    int posX = w / 4, posY = h / 2;
-    if (key == 1) {
-        posX += w / 2;
-    }
     refresh();
     QPainter painter(&pix);
-    drawMiddleLine(painter);
-    painter.fillRect(posX, posY, TARGET_SIZE, TARGET_SIZE, Qt::red);
+    int centerX = w / 2, centerY = h / 2;
+    QPolygon triangle;
+    painter.setBrush(Qt::red);
+    if (key == 0) {
+        triangle << QPoint(centerX, centerY-15) << QPoint(centerX, centerY+15) << QPoint(centerX-40, centerY);
+        painter.fillRect(centerX, centerY-5, 40, 10, Qt::red);
+    }
+    else {
+        triangle << QPoint(centerX, centerY-15) << QPoint(centerX, centerY+15) << QPoint(centerX+40, centerY);
+        painter.fillRect(centerX-40, centerY-5, 40, 10, Qt::red);
+    }
+    painter.drawPolygon(triangle);
     update();
 }
 
@@ -233,9 +241,13 @@ void MainWindow::logToFile()
 
     if (file.open(QIODevice::ReadWrite)) {
         QTextStream stream(&file);
+        double avgTime = 0;
         for (double rt : reactionTime) {
             stream << rt << endl;
+            avgTime += rt;
         }
+        avgTime = avgTime / trialCnt;
+        stream << "avg RT: " << avgTime << endl;
         stream << "right: " << right << endl;
         stream << "wrong: " << wrong << endl;
         file.close();
@@ -253,11 +265,12 @@ bool MainWindow::isOnTarget(const QPoint &pos)
 
 void MainWindow::drawMiddleLine(QPainter &painter)
 {
-    int w = this->size().width(), h = this->size().height();
-    QPen pen;
-    pen.setColor(Qt::white);
-    painter.setPen(pen);
-    painter.drawLine(w/2, 0, w/2, h);
+//    int w = this->size().width(), h = this->size().height();
+//    QPen pen;
+//    pen.setColor(Qt::white);
+//    painter.setPen(pen);
+//    painter.drawLine(w/3, 0, w/3, h);
+//    painter.drawLine(w/3*2, 0, w/3*2, h);
     update();
 }
 

@@ -12,7 +12,7 @@
 #include <unordered_map>
 #include <QCoreApplication>
 #include <QMediaPlayer>
-#include <QAudioOutput>
+#include <QPolygon>
 
 namespace Ui {
 class MainWindow;
@@ -55,7 +55,6 @@ private:
     int trialCnt;
     int right;
     int wrong;
-    QAudioOutput* audio;
 
     const std::vector<std::vector<int>> kSequence = {
         { 0, 1, 1, 0, 0, },

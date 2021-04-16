@@ -6,6 +6,7 @@ TypePage::TypePage(QWidget *parent) :
     ui(new Ui::TypePage)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Attentional Cueing Test");
     ui->comboBox->addItem("easy");
     ui->comboBox->addItem("medium");
     ui->comboBox->addItem("hard");
